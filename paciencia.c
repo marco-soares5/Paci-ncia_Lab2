@@ -57,7 +57,7 @@ void preenche_baralho(Carta *baralho)
 {
     int contador=0;
 
-    printf("preenchendo o baralho...\n");
+    printf("preenchendo o baralho...\n");       
     for (int i=0; i<4; i++)
     {
         for (int j=1; j<=13; j++)
@@ -94,16 +94,43 @@ void embaralhar_baralho(Carta *baralho)
     printf("baralho embaralhado.\n");
 }
 
-void cria_pilhas(Carta *baralho, Jogo *jogo)
-{
+void cria_pilhas(Carta *baralho, Jogo *jogo) // isso aqui é pra preencher as mãos // isso aqui não tem que começar do zero? ver isso depois
+{ // tem que implementar pra carta ficar visíveil
     int contador=0;
-    for(int i = 1; i <= 7; i++){
-        for(int j = 1; j <= i; j++){
+    for(int i = 1  ; i <= 7; i++){ // pra cada pilha 1 - 7
+        for(int j = 1; j <= i; j++){ // distribuir pra cada pilha
+            switch (i)
+            {
+            case 1:
+                jogo->pilha1[j] = baralho[contador];
+                break;
+            case 2:
+                jogo->pilha2[j];
+                break;
+            case 3:
+                jogo->pilha3[j];
+                break;
+            case 4:
+                jogo->pilha4[j];
+                break;
+            case 5:
+                jogo->pilha5[j];
+                break;
+            case 6: 
+                jogo->pilha6[j];
+                break;
+            case 7:
+                jogo->pilha7[j];
+                break;
+            }
         }
-        contador++;
     }
-    printf("\n");
 }
+
+void mostra_pilhas(Carta *baralho, Jogo *jogo){
+    printf("%d%s", jogo->pilha1[0].valor, jogo->pilha1[0].naipe);
+}
+
 
 void teste_de_baralho(Carta *baralho, Jogo *jogo)
 {    
@@ -114,12 +141,13 @@ void teste_de_baralho(Carta *baralho, Jogo *jogo)
     mostra_baralho(baralho);
     printf("\n\n\n");
     cria_pilhas(baralho, jogo);
+    mostra_pilhas(baralho, jogo);
 }
 
 int main()
 {
     Carta baralho[52];
     Jogo jogo;
-    teste_de_baralho(baralho, jogo)
+    teste_de_baralho(baralho, &jogo);
     return 0;
 }

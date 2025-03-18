@@ -4,149 +4,279 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct
-{     
+typedef struct{
     int naipe;
     int valor;
-    bool visivel;
-    // true = visivel, false = nao visivel
+    bool visivel; // true = visível, false = não visível
 }Carta;
 
-typedef struct
-{
-    Carta pilha1[13];
-    Carta pilha2[13];
-    Carta pilha3[13];
-    Carta pilha4[13];
-    Carta pilha5[13];
-    Carta pilha6[13];
-    Carta pilha7[13];
+typedef struct{
     Carta pilhaEspadas[13];
     Carta pilhaPaus[13];
     Carta pilhaCopas[13];
     Carta pilhaOuros[13];
+    bool jogando;
 }Jogo;
 
-
 char lista_de_naipes[4][100] = {"♠", "♣", "♥", "♦"};
-//char lista_de_naipes[4][100] = {"♤", "♧", "♡", "♢"};
 
-void mostra_baralho(Carta *baralho)
-{
-    printf("mostrando o baralho...\n");
-    int contador=0;
-    for (int i=0; i<4; i++)
-    {
-        printf("\n");
-        for (int j=0; j<13; j++)
-        {
-            if(baralho[contador].visivel == false)
-            {
-                printf("[]\t");
-            }
-            else
-            {
-                printf("%d%s\t", baralho[contador].valor, lista_de_naipes[baralho[contador].naipe]);
-            }
-            contador++;
+void mostra_baralho(Carta *baralho){
+    printf("Mostrando o baralho...\n");
+    for (int i = 0; i < 52; i++){
+        if (baralho[i].visivel){
+            printf("%d%s\t", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
+        }else{
+            printf("[]\t");
+        }
+        if ((i + 1) % 13 == 0){
+            printf("\n");
         }
     }
 }
 
-void preenche_baralho(Carta *baralho)
-{
-    int contador=0;
+void puxa_deposito(Carta *baralho){
+    int contador = 0;
+    
+    for(int i = 0; i < 52; i++){
+        if(baralho[i].valor != 0){
+            baralho[i].visivel = true;
+            break;
+        }
+        
+    }
+    for(int i = 0; i < 52; i++){
+        if(baralho[i].valor != 0){
+            contador++;
+            if(contador == 0){
+                printf("X");
+            }else{
+                if(baralho[i].visivel) printf("carta do topo: %d%s ", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
+            }
+            
+        }
+    }
+    printf("cartas no baralho: %d\n", contador);
+}
 
-    printf("preenchendo o baralho...\n");       
-    for (int i=0; i<4; i++)
-    {
-        for (int j=1; j<=13; j++)
-        {
+void preenche_baralho(Carta *baralho){
+    for (int i = 0, contador = 0; i < 4; i++){
+        for (int j = 1; j <= 13; j++, contador++){
             baralho[contador].naipe = i;
             baralho[contador].valor = j;
             baralho[contador].visivel = false;
-            contador++;
         }
     }
-    printf("baralho preenchido!\n");
 }
 
-void trocar_cartas(Carta *a, Carta *b) //swap
-{
-    Carta temp;
-    temp = *a;
+void trocar_cartas(Carta *a, Carta *b){
+    Carta temp = *a;
     *a = *b;
     *b = temp;
-}   
-
-/*
-percorre todas as cartas, trocando elas com outra de um índice aleatório
-*/
-void embaralhar_baralho(Carta *baralho)
-{
-    printf("embaralhando o baralho...\n");
-    srand(time(NULL));
-    for (int i=0; i<52; i++)
-    {
-        int random = rand()%(52);
-        trocar_cartas(&baralho[i], &baralho[random]);
-    }
-    printf("baralho embaralhado.\n");
 }
 
-void cria_pilhas(Carta *baralho, Jogo *jogo) // isso aqui é pra preencher as mãos // isso aqui não tem que começar do zero? ver isso depois
-{ // tem que implementar pra carta ficar visíveil
-    int contador=0;
-    for(int i = 1  ; i <= 7; i++){ // pra cada pilha 1 - 7
-        for(int j = 1; j <= i; j++){ // distribuir pra cada pilha
-            switch (i)
-            {
-            case 1:
-                jogo->pilha1[j] = baralho[contador];
-                break;
-            case 2:
-                jogo->pilha2[j];
-                break;
-            case 3:
-                jogo->pilha3[j];
-                break;
-            case 4:
-                jogo->pilha4[j];
-                break;
-            case 5:
-                jogo->pilha5[j];
-                break;
-            case 6: 
-                jogo->pilha6[j];
-                break;
-            case 7:
-                jogo->pilha7[j];
-                break;
-            }
+void embaralhar_baralho(Carta *baralho){
+    srand(time(NULL));
+    for (int i = 0; i < 52; i++){
+        int random = rand() % 52;
+        trocar_cartas(&baralho[i], &baralho[random]);
+    }
+}
+
+void remover_do_baralho(Carta *baralho, Carta carta_removida) {
+    for (int i = 0; i < 52; i++) {
+        if (baralho[i].valor == carta_removida.valor && baralho[i].naipe == carta_removida.naipe) {
+            baralho[i].valor = 0;
+            baralho[i].visivel = false;
+            break;
         }
     }
 }
 
-void mostra_pilha(){
-    
+void cria_pilhas(Carta *baralho, Carta pilhas[7][13], int *tamanho_pilha){
+    int somador = 0;
+
+    for (int i = 0; i < 7; i++){
+        for (int j = 0; j <= i; j++){
+            pilhas[i][j] = baralho[somador];
+            if(i == j){
+                pilhas[i][j].visivel = true;
+            }
+            somador++;
+        }
+        tamanho_pilha[i] = i + 1;
+    }
 }
 
+void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
+    for (int i = 0; i < 7; i++){
+        printf("pilha %d: ", i + 1);
+        for(int j = 0; j < tamanho_pilha[i]; j++){
+            if(j < tamanho_pilha[i] && pilhas[i][j].visivel){
+                printf("%d%s ", pilhas[i][j].valor, lista_de_naipes[pilhas[i][j].naipe]);
+            }else{
+                printf("[] ");
+            }
+        }
+        printf("\n");
+    }
+}
 
-void teste_de_baralho(Carta *baralho, Jogo *jogo)
-{    
+int pede_instrucoes(){
+    int instrucao;
+    printf("escolha uma pilha para selecionar (1-7) ou 0 para sair: ");
+    scanf("%d", &instrucao);
+    return instrucao;
+}
+
+void instrução_recebida1(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13]){
+    switch (instrução)
+    {
+    case 0:
+        jogo -> jogando = false;
+        printf("Botão 0 digitado, saindo do jogo!1");
+        break;
+    case 1:
+        if (tamanho_pilha[0] > 0){
+            int primeira_carta = tamanho_pilha[0] - 1;
+            printf("Selecionando a priemeira carta da pilha 1");   
+            lista_de_naipes[pilhas[0][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 2:
+        if (tamanho_pilha[1] > 0){
+            int primeira_carta = tamanho_pilha[1] - 1;
+            printf("Selecionando a segunda carta da pilha 2");   
+            lista_de_naipes[pilhas[1][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 3:
+        if (tamanho_pilha[2] > 0){
+            int primeira_carta = tamanho_pilha[2] - 1;
+            printf("Selecionando a priemeira carta da pilha 3");   
+            lista_de_naipes[pilhas[2][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 4:
+        if (tamanho_pilha[3] > 0){
+            int primeira_carta = tamanho_pilha[3] - 1;
+            printf("Selecionando a priemeira carta da pilha 4");   
+            lista_de_naipes[pilhas[3][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 5:
+        if (tamanho_pilha[4] > 0){
+            int primeira_carta = tamanho_pilha[4] - 1;
+            printf("Selecionando a priemeira carta da pilha 5");   
+            lista_de_naipes[pilhas[4][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 6:
+        if (tamanho_pilha[5] > 0){
+            int primeira_carta = tamanho_pilha[5] - 1;
+            printf("Selecionando a priemeira carta da pilha 6");   
+            lista_de_naipes[pilhas[5][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 7:
+        if (tamanho_pilha[6] > 0){
+            int primeira_carta = tamanho_pilha[6] - 1;
+            printf("Selecionando a priemeira carta da pilha 7");   
+            lista_de_naipes[pilhas[6][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 8: //pegar uma carta e jogar na pilha de descarte
+
+    }
+}
+
+void instrução_destino(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13]){
+    switch (instrução)
+    {
+    case 0:
+        jogo -> jogando = false;
+        printf("Botão 0 digitado, saindo do jogo!1");
+        break;
+    case 1:
+        if (tamanho_pilha[0] == 0){
+            int primeira_carta = tamanho_pilha[0] - 1;
+            printf("Selecionando a priemeira carta da pilha 1");   
+            lista_de_naipes[pilhas[0][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 2:
+        if (tamanho_pilha[1] == 0){
+            int primeira_carta = tamanho_pilha[1] - 1;
+            printf("Selecionando a segunda carta da pilha 2");   
+            lista_de_naipes[pilhas[1][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 3:
+        if (tamanho_pilha[2] == 0){
+            int primeira_carta = tamanho_pilha[2] - 1;
+            printf("Selecionando a priemeira carta da pilha 3");   
+            lista_de_naipes[pilhas[2][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 4:
+        if (tamanho_pilha[3] == 0){
+            int primeira_carta = tamanho_pilha[3] - 1;
+            printf("Selecionando a priemeira carta da pilha 4");   
+            lista_de_naipes[pilhas[3][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 5:
+        if (tamanho_pilha[4] == 0){
+            int primeira_carta = tamanho_pilha[4] - 1;
+            printf("Selecionando a priemeira carta da pilha 1");   
+            lista_de_naipes[pilhas[4][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 6:
+        if (tamanho_pilha[5] == 0){
+            int primeira_carta = tamanho_pilha[5] - 1;
+            printf("Selecionando a priemeira carta da pilha 1");   
+            lista_de_naipes[pilhas[5][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    case 7:
+        if (tamanho_pilha[6] == 0){
+            int primeira_carta = tamanho_pilha[6] - 1;
+            printf("Selecionando a priemeira carta da pilha 1");   
+            lista_de_naipes[pilhas[6][primeira_carta].naipe];
+        } else {printf("A pilha está vazia");}
+        break;
+    }
+}
+int main(){
+    Carta baralho[52];
+    Carta pilhas[7][13];
+    int tamanho_pilha[7];
+    int instrucao;
+
     preenche_baralho(baralho);
     mostra_baralho(baralho);
-    printf("\n\n\n");
     embaralhar_baralho(baralho);
     mostra_baralho(baralho);
-    printf("\n\n\n");
-    cria_pilhas(baralho, jogo);
-}
+    cria_pilhas(baralho, pilhas, tamanho_pilha);
+    system("chcp 65001");
+    system("cls");
 
-int main()
-{
-    Carta baralho[52];
-    Jogo jogo;
-    teste_de_baralho(baralho, &jogo);
+    do{
+        printf("paciencia!\n");
+    
+        mostra_pilhas(pilhas, tamanho_pilha);
+        puxa_deposito(baralho);
+        instrucao = pede_instrucoes();
+
+        if(instrucao >= 1 && instrucao <= 7){
+            printf("\npilha %d selecionada\n", instrucao);
+        }else if(instrucao == 0){
+            printf("\nsaindo do jogo\n");
+        }else{
+            printf("\ndigite uma instrucao valida\n");
+        }
+        system("cls");
+    }while (instrucao != 0);
+
     return 0;
 }

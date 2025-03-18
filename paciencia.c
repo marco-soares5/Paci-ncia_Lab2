@@ -12,6 +12,22 @@ typedef struct
     // true = visivel, false = nao visivel
 }Carta;
 
+typedef struct
+{
+    Carta pilha1[13];
+    Carta pilha2[13];
+    Carta pilha3[13];
+    Carta pilha4[13];
+    Carta pilha5[13];
+    Carta pilha6[13];
+    Carta pilha7[13];
+    Carta pilhaEspadas[13];
+    Carta pilhaPaus[13];
+    Carta pilhaCopas[13];
+    Carta pilhaOuros[13];
+}Jogo;
+
+
 char lista_de_naipes[4][100] = {"♠", "♣", "♥", "♦"};
 //char lista_de_naipes[4][100] = {"♤", "♧", "♡", "♢"};
 
@@ -24,7 +40,7 @@ void mostra_baralho(Carta *baralho)
         printf("\n");
         for (int j=0; j<13; j++)
         {
-            if(baralho[contador].visivel == true)
+            if(baralho[contador].visivel == false)
             {
                 printf("[]\t");
             }
@@ -78,53 +94,18 @@ void embaralhar_baralho(Carta *baralho)
     printf("baralho embaralhado.\n");
 }
 
-void cria_pilhas(Carta *baralho)
+void cria_pilhas(Carta *baralho, Jogo *jogo)
 {
     int contador=0;
-    Carta pilha1[13], pilha2[13], pilha3[13], pilha4[13], pilha5[13], pilha6[13], pilha7[13];
     for(int i = 1; i <= 7; i++){
         for(int j = 1; j <= i; j++){
-            switch(i)
-            {
-            case 1:
-                pilha1[j] = baralho[contador];
-                break;
-            
-            case 2:
-                pilha2[j] = baralho[contador];
-                break;
-
-            case 3:
-                pilha3[j] = baralho[contador];
-                break;
-            
-            case 4:
-                pilha4[j] = baralho[contador];
-                break;
-            
-            case 5:
-                pilha5[j] = baralho[contador];
-                break;
-                
-            case 6:
-                pilha6[j] = baralho[contador];
-                break;
-            
-            case 7:
-                pilha7[j] = baralho[contador];
-                break;
-
-            default:
-                break;
-            }
-            printf("%d%s\t", baralho[contador].valor, lista_de_naipes[baralho[contador].naipe]);
-            contador++;
         }
-        printf("\n");
+        contador++;
     }
+    printf("\n");
 }
 
-void teste_de_baralho(Carta *baralho)
+void teste_de_baralho(Carta *baralho, Jogo *jogo)
 {    
     preenche_baralho(baralho);
     mostra_baralho(baralho);
@@ -132,12 +113,13 @@ void teste_de_baralho(Carta *baralho)
     embaralhar_baralho(baralho);
     mostra_baralho(baralho);
     printf("\n\n\n");
-    cria_pilhas(baralho);
+    cria_pilhas(baralho, jogo);
 }
 
 int main()
 {
     Carta baralho[52];
-    teste_de_baralho(baralho);
+    Jogo jogo;
+    teste_de_baralho(baralho, jogo)
     return 0;
 }

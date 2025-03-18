@@ -35,27 +35,20 @@ void mostra_baralho(Carta *baralho){
 }
 
 void puxa_deposito(Carta *baralho){
-    int contador = 0;
-    
+    Carta *primeira_carta = NULL;
+
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
             baralho[i].visivel = true;
+            primeira_carta = &baralho[i];
             break;
         }
-        
     }
-    for(int i = 0; i < 52; i++){
-        if(baralho[i].valor != 0){
-            contador++;
-            if(contador == 0){
-                printf("X");
-            }else{
-                if(baralho[i].visivel) printf("carta do topo: %d%s ", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
-            }
-            
-        }
+    if (primeira_carta != NULL) {
+        printf("Carta no primeira_carta: %d de %s\n", primeira_carta->valor, lista_de_naipes[primeira_carta->naipe]);
+    } else {
+        printf("O deposito está vazio.\n");
     }
-    printf("cartas no baralho: %d\n", contador);
 }
 
 void preenche_baralho(Carta *baralho){
@@ -128,7 +121,7 @@ int pede_instrucoes(){
     return instrucao;
 }
 
-void instrução_recebida1(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13]){
+void instrução_recebida1(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13], Carta *baralho){
     switch (instrução)
     {
     case 0:
@@ -185,7 +178,7 @@ void instrução_recebida1(int instrução, Jogo *jogo, int *tamanho_pilha, Cart
         } else {printf("A pilha está vazia");}
         break;
     case 8: //pegar uma carta e jogar na pilha de descarte
-
+        puxa_deposito(baralho);
     }
 }
 
@@ -252,12 +245,14 @@ int main(){
     Carta pilhas[7][13];
     int tamanho_pilha[7];
     int instrucao;
+    Jogo jogo;
+    jogo.jogando = true;
 
     preenche_baralho(baralho);
     mostra_baralho(baralho);
     embaralhar_baralho(baralho);
     mostra_baralho(baralho);
-    cria_pilhas(baralho, pilhas, tamanho_pilha);
+    cria_pilhas(baralho, pilhas, tamanho_pilha);    
     system("chcp 65001");
     system("cls");
 
@@ -268,15 +263,10 @@ int main(){
         puxa_deposito(baralho);
         instrucao = pede_instrucoes();
 
-        if(instrucao >= 1 && instrucao <= 7){
-            printf("\npilha %d selecionada\n", instrucao);
-        }else if(instrucao == 0){
-            printf("\nsaindo do jogo\n");
-        }else{
-            printf("\ndigite uma instrucao valida\n");
-        }
+        instrução_recebida1(instrucao, &jogo, tamanho_pilha, pilhas, baralho);
+
         system("cls");
-    }while (instrucao != 0);
+    }while (jogo.jogando = true);
 
     return 0;
 }

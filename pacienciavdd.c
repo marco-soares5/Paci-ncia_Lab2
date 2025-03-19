@@ -102,15 +102,15 @@ void cria_pilhas(Carta *baralho, Carta pilhas[7][13], int *tamanho_pilha){
 
 void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
     for (int i = 0; i < 7; i++){
-        printf("pilha %d: ", i + 1);
+        printf("Pilha %d: \t", i + 1);
         for(int j = 0; j < tamanho_pilha[i]; j++){
             if(j < tamanho_pilha[i] && pilhas[i][j].visivel){
-                printf("%d%s ", pilhas[i][j].valor, lista_de_naipes[pilhas[i][j].naipe]);
+                printf("%d%s\t", pilhas[i][j].valor, lista_de_naipes[pilhas[i][j].naipe]);
             }else{
-                printf("[] ");
+                printf("?\t");
             }
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 
@@ -121,125 +121,38 @@ int pede_instrucoes(){
     return instrucao;
 }
 
-void instrução_recebida1(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13], Carta *baralho){
-    switch (instrução)
-    {
-    case 0:
+// adicionei status de retorno: -1: encerrar jogo, 0: pilha invalida, 1: ok
+int instrucao_recebida(int instrucao, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13], Carta *baralho){    
+    if (instrucao == 0){
         jogo -> jogando = false;
-        printf("Botão 0 digitado, saindo do jogo!1");
-        break;
-    case 1:
-        if (tamanho_pilha[0] > 0){
-            int primeira_carta = tamanho_pilha[0] - 1;
-            printf("Selecionando a priemeira carta da pilha 1");   
-            lista_de_naipes[pilhas[0][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 2:
-        if (tamanho_pilha[1] > 0){
-            int primeira_carta = tamanho_pilha[1] - 1;
-            printf("Selecionando a segunda carta da pilha 2");   
-            lista_de_naipes[pilhas[1][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 3:
-        if (tamanho_pilha[2] > 0){
-            int primeira_carta = tamanho_pilha[2] - 1;
-            printf("Selecionando a priemeira carta da pilha 3");   
-            lista_de_naipes[pilhas[2][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 4:
-        if (tamanho_pilha[3] > 0){
-            int primeira_carta = tamanho_pilha[3] - 1;
-            printf("Selecionando a priemeira carta da pilha 4");   
-            lista_de_naipes[pilhas[3][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 5:
-        if (tamanho_pilha[4] > 0){
-            int primeira_carta = tamanho_pilha[4] - 1;
-            printf("Selecionando a priemeira carta da pilha 5");   
-            lista_de_naipes[pilhas[4][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 6:
-        if (tamanho_pilha[5] > 0){
-            int primeira_carta = tamanho_pilha[5] - 1;
-            printf("Selecionando a priemeira carta da pilha 6");   
-            lista_de_naipes[pilhas[5][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 7:
-        if (tamanho_pilha[6] > 0){
-            int primeira_carta = tamanho_pilha[6] - 1;
-            printf("Selecionando a priemeira carta da pilha 7");   
-            lista_de_naipes[pilhas[6][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 8: //pegar uma carta e jogar na pilha de descarte
+        return -1;
+    }
+    else if (instrucao >= 1 && instrucao <= 7){
+        int index = instrucao-1; //indice da pilha
+        if (tamanho_pilha[index]>0){   
+            int primeira_carta = tamanho_pilha[index]-1;
+            printf("Selecionando a primeira carta da 'Pilha %d':  %d de %s\n", instrucao, pilhas[index][primeira_carta].valor,
+            lista_de_naipes[pilhas[index][primeira_carta].naipe]);
+            return 1;
+        }
+    }
+    else if (instrucao == 8){
+        printf("Puxando deposito...\n");
         puxa_deposito(baralho);
+        return 1;
+    } 
+    else{
+        printf("A 'Pilha %d' não é válida!\n", instrucao);
+        return 0;
     }
 }
 
-void instrução_destino(int instrução, Jogo *jogo, int *tamanho_pilha, Carta pilhas[7][13]){
-    switch (instrução)
-    {
-    case 0:
-        jogo -> jogando = false;
-        printf("Botão 0 digitado, saindo do jogo!1");
-        break;
-    case 1:
-        if (tamanho_pilha[0] == 0){
-            int primeira_carta = tamanho_pilha[0] - 1;
-            printf("Selecionando a priemeira carta da pilha 1");   
-            lista_de_naipes[pilhas[0][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 2:
-        if (tamanho_pilha[1] == 0){
-            int primeira_carta = tamanho_pilha[1] - 1;
-            printf("Selecionando a segunda carta da pilha 2");   
-            lista_de_naipes[pilhas[1][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 3:
-        if (tamanho_pilha[2] == 0){
-            int primeira_carta = tamanho_pilha[2] - 1;
-            printf("Selecionando a priemeira carta da pilha 3");   
-            lista_de_naipes[pilhas[2][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 4:
-        if (tamanho_pilha[3] == 0){
-            int primeira_carta = tamanho_pilha[3] - 1;
-            printf("Selecionando a priemeira carta da pilha 4");   
-            lista_de_naipes[pilhas[3][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 5:
-        if (tamanho_pilha[4] == 0){
-            int primeira_carta = tamanho_pilha[4] - 1;
-            printf("Selecionando a priemeira carta da pilha 1");   
-            lista_de_naipes[pilhas[4][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 6:
-        if (tamanho_pilha[5] == 0){
-            int primeira_carta = tamanho_pilha[5] - 1;
-            printf("Selecionando a priemeira carta da pilha 1");   
-            lista_de_naipes[pilhas[5][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    case 7:
-        if (tamanho_pilha[6] == 0){
-            int primeira_carta = tamanho_pilha[6] - 1;
-            printf("Selecionando a priemeira carta da pilha 1");   
-            lista_de_naipes[pilhas[6][primeira_carta].naipe];
-        } else {printf("A pilha está vazia");}
-        break;
-    }
+void mover_carta(Jogo *jogo, Carta *pilha_antiga, Carta *pilha_nova)
+{
+    int i=0, ultima_carta;
+    
 }
+
 int main(){
     Carta baralho[52];
     Carta pilhas[7][13];
@@ -254,19 +167,21 @@ int main(){
     mostra_baralho(baralho);
     cria_pilhas(baralho, pilhas, tamanho_pilha);    
     system("chcp 65001");
-    system("cls");
+    system("cls||clear");
 
     do{
-        printf("paciencia!\n");
+        printf("\nPaciencia!\n\n");
     
         mostra_pilhas(pilhas, tamanho_pilha);
         puxa_deposito(baralho);
         instrucao = pede_instrucoes();
 
-        instrução_recebida1(instrucao, &jogo, tamanho_pilha, pilhas, baralho);
+        system("cls||clear");
+        instrucao_recebida(instrucao, &jogo, tamanho_pilha, pilhas, baralho);
 
-        system("cls");
-    }while (jogo.jogando = true);
+    }while (jogo.jogando == true);
+
+
 
     return 0;
 }

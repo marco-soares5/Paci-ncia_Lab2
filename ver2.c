@@ -143,7 +143,7 @@ int main(){
     mostra_baralho(baralho);
     cria_pilhas(baralho, pilhas, tamanho_pilha);
     system("chcp 65001");
-    system("cls");
+    system("cls || clear");
 
     do{
         printf("paciencia!\n");
@@ -159,7 +159,7 @@ int main(){
         }else{
             printf("\ndigite uma instrucao valida\n");
         }
-        system("cls");
+        system("cls || clear");
     }while (instrucao != 0);
 
     return 0;

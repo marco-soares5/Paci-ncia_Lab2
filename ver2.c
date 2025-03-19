@@ -93,13 +93,19 @@ void cria_pilhas(Carta *baralho, Carta pilhas[7][13], int *tamanho_pilha){
     int somador = 0;
 
     for (int i = 0; i < 7; i++){
-        for (int j = 0; j <= i; j++){
-            pilhas[i][j] = baralho[somador];
-            remover_do_baralho(baralho, pilhas[i][j]);
-            if(i == j){
-                pilhas[i][j].visivel = true;
+        for (int j = 0; j < 13; j++){
+            if (j <= i) {
+                pilhas[i][j] = baralho[somador];
+                remover_do_baralho(baralho, pilhas[i][j]);
+                if(i == j){
+                    pilhas[i][j].visivel = true;
+                }
+                somador++;
+            } else {
+                pilhas[i][j].valor = 0;
+                pilhas[i][j].naipe = 0;
+                pilhas[i][j].visivel = false;
             }
-            somador++;
         }
         tamanho_pilha[i] = i + 1;
     }
@@ -139,7 +145,7 @@ void executa_instrucao(int instrucao){
 
 // supostamente retorna o índice da carta do topo
 int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
-    int indice_carta;
+    int indice_carta=0;
     
     for (int i=0; i<MAX_CARTAS; i++){
         if (pilhas[indice_pilha][i].valor == 0){
@@ -147,8 +153,10 @@ int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
             break;
         }  
     }
-    printf("índice da carta do topo da Pilha %d: %d\ncarta do topo da Pilha %d: %d de %s!\n\n", indice_pilha+1, indice_pilha, indice_pilha+1, 
-    pilhas[indice_pilha][indice_carta].valor, lista_de_naipes[pilhas[indice_pilha][indice_carta].naipe]);
+    printf("índice da carta do topo da Pilha %d: %d\n", indice_pilha+1, indice_carta);
+
+    printf("Carta do topo da Pilha %d: %d de %s!\n\n", indice_pilha+1, pilhas[indice_pilha][indice_carta].valor, 
+    lista_de_naipes[pilhas[indice_pilha][indice_carta].naipe]);
     
     return indice_carta;
 }
@@ -175,7 +183,6 @@ int main(){
 
     do{
         printf("Paciencia!\n\n");
-        int topofica = carta_topo(1, pilhas);
         
         mostra_pilhas(pilhas, tamanho_pilha);
         printf("");
@@ -183,6 +190,7 @@ int main(){
 
         instrucao = pede_instrucoes();
         system("cls || clear");
+        carta_topo(instrucao-1, pilhas);
         executa_instrucao(instrucao);
         
     }while (instrucao != 0);

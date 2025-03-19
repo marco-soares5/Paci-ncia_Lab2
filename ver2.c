@@ -4,19 +4,14 @@
 #include <string.h>
 #include <time.h>
 
+#define MAX_CARTAS 13
+#define NUM_PILHAS 7
+
 typedef struct{
     int naipe;
     int valor;
     bool visivel; // true = visível, false = não visível
 }Carta;
-
-typedef struct{
-    Carta pilhaEspadas[13];
-    Carta pilhaPaus[13];
-    Carta pilhaCopas[13];
-    Carta pilhaOuros[13];
-    bool jogando;
-}Jogo;
 
 char lista_de_naipes[4][100] = {"♠", "♣", "♥", "♦"};
 
@@ -44,7 +39,6 @@ void puxa_deposito(Carta *baralho){
             baralho[i].visivel = true;
             break;
         }
-        
     }
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
@@ -52,12 +46,12 @@ void puxa_deposito(Carta *baralho){
             if(contador == 0){
                 printf("X");
             }else{
-                if(baralho[i].visivel) printf("carta do topo: %d%s ", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
+                if(baralho[i].visivel) printf("\nCarta do Topo:     %d%s ", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
             }
             
         }
     }
-    printf("cartas no baralho: %d\n", contador);
+    printf("\nCartas no baralho: %d\n", contador);
 }
 
 void preenche_baralho(Carta *baralho){
@@ -66,6 +60,7 @@ void preenche_baralho(Carta *baralho){
             baralho[contador].naipe = i;
             baralho[contador].valor = j;
             baralho[contador].visivel = false;
+            // baralho[contador].visivel = true;
         }
     }
 }
@@ -112,7 +107,7 @@ void cria_pilhas(Carta *baralho, Carta pilhas[7][13], int *tamanho_pilha){
 
 void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
     for (int i = 0; i < 7; i++){
-        printf("pilha %d: ", i + 1);
+        printf("Pilha %d: ", i + 1);
         for(int j = 0; j < tamanho_pilha[i]; j++){
             if(j < tamanho_pilha[i] && pilhas[i][j].visivel){
                 printf("%d%s ", pilhas[i][j].valor, lista_de_naipes[pilhas[i][j].naipe]);
@@ -126,10 +121,42 @@ void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
 
 int pede_instrucoes(){
     int instrucao;
-    printf("escolha uma pilha para selecionar (1-7) - 0 para sair - 9 para comprar do depósito: ");
+    printf("\nSelecionar Pilha (1-7) | 9 Comprar do Depósito | 0 Sair: ");
     scanf("%d", &instrucao);
     return instrucao;
 }
+
+void executa_instrucao(int instrucao){
+
+    if(instrucao >= 1 && instrucao <= 7){
+        printf("\nPilha %d selecionada\n", instrucao);
+    }else if(instrucao == 0){
+        printf("\nsaindo do jogo\n");
+    }else{
+        printf("\ndigite uma instrucao valida\n");
+    }
+}
+
+// supostamente retorna o índice da carta do topo
+int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
+    int indice_carta;
+    
+    for (int i=0; i<MAX_CARTAS; i++){
+        if (pilhas[indice_pilha][i].valor == 0){
+            indice_carta = i-1;
+            break;
+        }  
+    }
+    printf("índice da carta do topo da Pilha %d: %d\ncarta do topo da Pilha %d: %d de %s!\n\n", indice_pilha+1, indice_pilha, indice_pilha+1, 
+    pilhas[indice_pilha][indice_carta].valor, lista_de_naipes[pilhas[indice_pilha][indice_carta].naipe]);
+    
+    return indice_carta;
+}
+
+// void move_cartas(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int pilhaDestino){
+    
+//     pilhas[pilhaOrigem][j];
+// }
 
 int main(){
     Carta baralho[52];
@@ -142,24 +169,22 @@ int main(){
     embaralhar_baralho(baralho);
     mostra_baralho(baralho);
     cria_pilhas(baralho, pilhas, tamanho_pilha);
-    system("chcp 65001");
-    system("cls || clear");
+
+    system("chcp 65001"); //utf-8 para o terminal
+    system("cls || clear"); //limpar o terminal windows+linux
 
     do{
-        printf("paciencia!\n");
-    
+        printf("Paciencia!\n\n");
+        int topofica = carta_topo(1, pilhas);
+        
         mostra_pilhas(pilhas, tamanho_pilha);
+        printf("");
         puxa_deposito(baralho);
-        instrucao = pede_instrucoes();
 
-        if(instrucao >= 1 && instrucao <= 7){
-            printf("\npilha %d selecionada\n", instrucao);
-        }else if(instrucao == 0){
-            printf("\nsaindo do jogo\n");
-        }else{
-            printf("\ndigite uma instrucao valida\n");
-        }
+        instrucao = pede_instrucoes();
         system("cls || clear");
+        executa_instrucao(instrucao);
+        
     }while (instrucao != 0);
 
     return 0;

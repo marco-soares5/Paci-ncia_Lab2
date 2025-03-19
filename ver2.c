@@ -43,13 +43,11 @@ void puxa_deposito(Carta *baralho){
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
             contador++;
-            if(contador == 0){
-                printf("X");
-            }else{
-                if(baralho[i].visivel) printf("\nCarta do Topo:     %d%s ", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
-            }
-            
+            if(baralho[i].visivel) printf("\nCarta do Topo: %d%s", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);  
         }
+    }
+    if(contador == 0){
+        printf("\nSem cartas no baralho");
     }
     printf("\nCartas no baralho: %d\n", contador);
 }
@@ -129,14 +127,16 @@ int pede_instrucoes(){
     int instrucao;
     
     do{
-        printf("\n(1-7) Selecionar Pilha | 9 Comprar do Depósito | 0 Sair: ");
+        printf("\n(1-7) - Selecionar Pilha | 8 - Comprar do Depósito | 0 - Sair: ");
         scanf("%d", &instrucao);
         if(instrucao >= 1 && instrucao <= 7){
             printf("Pilha %d selecionada\n", instrucao);
-        }else{
-            printf("digite uma instrucao valida\n");
+        }else if(instrucao == 8){
+                printf("Carta comprada\n", instrucao);
+        }else if (instrucao != 0){
+            printf("Digite uma instrucao valida\n");
         }
-    }while(!(instrucao >= 0 && instrucao <= 7));
+    }while(!(instrucao >= 0 && instrucao <= 8));
     
     return instrucao;
 }
@@ -159,8 +159,27 @@ int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
     return indice_carta;
 }
 
-void compra_carta(Carta *baralho, Carta descarte[24]){
+void compra_carta(Carta *baralho, Carta descarte[52]){
+    for(int i = 0; i < 52; i++){
+        descarte[i].visivel = true; // iniciar o descarte como invisivel
+    }
+    for(int i = 0; i < 52; i++){
+        if(baralho[i].valor != 0){
+            descarte[i].valor = baralho[i].valor;
+            descarte[i].naipe = baralho[i].naipe;
+            remover_do_baralho(baralho, baralho[i]);
+            break;
+        }
+    }
 
+    for(int i = 0; i < 52; i++){
+        if(descarte[i].valor != 0){
+            descarte[i].visivel = true;
+            break;
+        }
+        if(descarte[i].visivel) printf("\nCarta do descarte: %d%s ", descarte[i].valor, lista_de_naipes[descarte[i].naipe]);
+    }
+    
 }
 
 // void move_cartas(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int pilhaDestino){
@@ -171,7 +190,7 @@ void compra_carta(Carta *baralho, Carta descarte[24]){
 int main(){
     Carta baralho[52];
     Carta pilhas[7][13];
-    Carta pilha_descarte[24];
+    Carta pilha_descarte[52];
     int tamanho_pilha[7];
     int instrucao;
 
@@ -183,6 +202,10 @@ int main(){
 
     system("chcp 65001"); //utf-8 para o terminal
     system("cls || clear"); //limpar o terminal windows+linux
+    system("ipconfig || hostname -I");
+
+    printf("VAMOS JOGAR PACIENCIA - aperte ENTER pra comecar");
+    getchar();
 
     do{
         printf("Paciencia!\n\n");
@@ -191,13 +214,10 @@ int main(){
         puxa_deposito(baralho);
         instrucao = pede_instrucoes();
         
-        if(instrucao == 9) compra_carta(baralho, pilha_descarte);
-
-        system("cls || clear");
-        if(instrucao != 0) carta_topo(instrucao - 1, pilhas);
+        if(instrucao == 8) compra_carta(baralho, pilha_descarte);
+        if(instrucao != 0 && instrucao != 8) carta_topo(instrucao - 1, pilhas);
         
     }while (instrucao != 0);
-    system("cls || clear");
 
     return 0;
 }

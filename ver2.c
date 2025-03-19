@@ -127,20 +127,18 @@ void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
 
 int pede_instrucoes(){
     int instrucao;
-    printf("\nSelecionar Pilha (1-7) | 9 Comprar do Depósito | 0 Sair: ");
-    scanf("%d", &instrucao);
+    
+    do{
+        printf("\n(1-7) Selecionar Pilha | 9 Comprar do Depósito | 0 Sair: ");
+        scanf("%d", &instrucao);
+        if(instrucao >= 1 && instrucao <= 7){
+            printf("Pilha %d selecionada\n", instrucao);
+        }else{
+            printf("digite uma instrucao valida\n");
+        }
+    }while(!(instrucao >= 0 && instrucao <= 7));
+    
     return instrucao;
-}
-
-void executa_instrucao(int instrucao){
-
-    if(instrucao >= 1 && instrucao <= 7){
-        printf("\nPilha %d selecionada\n", instrucao);
-    }else if(instrucao == 0){
-        printf("\nsaindo do jogo\n");
-    }else{
-        printf("\ndigite uma instrucao valida\n");
-    }
 }
 
 // supostamente retorna o índice da carta do topo
@@ -161,6 +159,10 @@ int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
     return indice_carta;
 }
 
+void compra_carta(Carta *baralho, Carta descarte[24]){
+
+}
+
 // void move_cartas(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int pilhaDestino){
     
 //     pilhas[pilhaOrigem][j];
@@ -169,6 +171,7 @@ int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
 int main(){
     Carta baralho[52];
     Carta pilhas[7][13];
+    Carta pilha_descarte[24];
     int tamanho_pilha[7];
     int instrucao;
 
@@ -185,15 +188,16 @@ int main(){
         printf("Paciencia!\n\n");
         
         mostra_pilhas(pilhas, tamanho_pilha);
-        printf("");
         puxa_deposito(baralho);
-
         instrucao = pede_instrucoes();
+        
+        if(instrucao == 9) compra_carta(baralho, pilha_descarte);
+
         system("cls || clear");
-        carta_topo(instrucao-1, pilhas);
-        executa_instrucao(instrucao);
+        if(instrucao != 0) carta_topo(instrucao - 1, pilhas);
         
     }while (instrucao != 0);
+    system("cls || clear");
 
     return 0;
 }

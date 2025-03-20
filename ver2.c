@@ -41,19 +41,12 @@ void mostra_baralho(Carta *baralho){
     }
 }
 
-void puxa_deposito(Carta *baralho){
+void conta_cartas_baralho(Carta *baralho){
     int contador = 0;
 
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
-            baralho[i].visivel = true;
-            break;
-        }
-    }
-    for(int i = 0; i < 52; i++){
-        if(baralho[i].valor != 0){
             contador++;
-            if(baralho[i].visivel) printf("\nCarta do Topo: %d%s", baralho[i].valor, lista_de_naipes[baralho[i].naipe]);
         }
     }
     if(contador == 0){
@@ -65,6 +58,8 @@ void puxa_deposito(Carta *baralho){
 void preenche_baralho(Carta *baralho){
     for(int i = 0, contador = 0; i < 4; i++){
         for(int j = 1; j <= 13; j++, contador++){
+            // baralho[contador].naipe = i;
+            // baralho[contador].valor = 1;
             baralho[contador].naipe = i;
             baralho[contador].valor = j;
             baralho[contador].visivel = false;
@@ -87,9 +82,11 @@ void embaralhar_baralho(Carta *baralho){
 }
 
 void remover_do_baralho(Carta *baralho, Carta carta_removida){
+    
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor == carta_removida.valor && baralho[i].naipe == carta_removida.naipe){
             baralho[i].valor = 0;
+            baralho[i].naipe = 0;
             baralho[i].visivel = false;
             break;
         }
@@ -131,7 +128,15 @@ void mostra_pilhas(Carta pilhas[7][13], int *tamanho_pilha){
         }
         printf("\n");
     }
-    printf("\033[0m");
+
+    // printf("\033[0m");
+    // for (int i=0; i<4; i++){
+    //     printf("Pilha Final %d: \t");
+    //     for (int j=0; j<MAX_CARTAS; j++){
+    //         printf("%d ", );
+    //     }
+    // }
+    // printf("\n\n");
 }
 
 int carta_topo(int indice_pilha, Carta pilhas[NUM_PILHAS][MAX_CARTAS]){
@@ -208,9 +213,14 @@ void move_cartas(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilha, int p
 }
 
 void compra_carta(Carta *baralho, Carta descarte[52]){
+    
+    // incializa a pilha de descarte
     for(int i = 0; i < 52; i++){
-        descarte[i].visivel = true; // iniciar o descarte como invisivel
+        descarte[i].naipe = 0;
+        descarte[i].valor = 0;
+        descarte[i].visivel = false; // invisivel
     }
+
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
             descarte[i].valor = baralho[i].valor;
@@ -219,6 +229,7 @@ void compra_carta(Carta *baralho, Carta descarte[52]){
             break;
         }
     }
+    
 }
 
 int pede_instrucoes(){
@@ -245,8 +256,65 @@ int pede_instrucoes(){
             printf("\n\n");
         }
     }while(!(instrucao >= 0 && instrucao <= 8));
-
     return instrucao;
+}
+
+// pilhas globais
+Carta pilhaEspadas[MAX_CARTAS]; 
+Carta pilhaPaus[MAX_CARTAS]; 
+Carta pilhaOuros[MAX_CARTAS];
+Carta pilhaCopas[MAX_CARTAS];
+
+void inicializar_globais(Carta pilha[MAX_CARTAS]){
+        for (int i=0; i<MAX_CARTAS; i++){
+            pilha[i].valor = 0;
+            pilha[i].naipe = 0;
+            pilha[i].visivel = false;
+        }
+}
+
+void inicializar_pilhas_globais(){
+    inicializar_globais(pilhaCopas);
+    inicializar_globais(pilhaOuros);
+    inicializar_globais(pilhaPaus);
+    inicializar_globais(pilhaEspadas);
+}
+
+void pilhas_finais(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem){
+    int topo_origem = carta_topo(pilhaOrigem, pilhas);
+    int contaEspadas = 0, contaPaus = 0, contaOuros = 0, contaCopas = 0;
+
+    for(int i = 0; i < 13; i++){
+        if(pilhas[pilhaOrigem][topo_origem].valor == pilhaEspadas[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 0){
+            pilhaEspadas[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
+            contaEspadas = pilhaEspadas[i].valor;
+            pilhas[pilhaOrigem][topo_origem].valor = 0;
+            pilhas[pilhaOrigem][topo_origem].visivel = false;
+            break;
+        }
+        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaPaus[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 1){
+            pilhaPaus[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
+            contaPaus = pilhaPaus[i].valor;
+            pilhas[pilhaOrigem][topo_origem].valor = 0;
+            pilhas[pilhaOrigem][topo_origem].visivel = false;
+            break;
+        }
+        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaOuros[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 2){
+            pilhaOuros[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
+            contaOuros = pilhaOuros[i].valor;
+            pilhas[pilhaOrigem][topo_origem].valor = 0;
+            pilhas[pilhaOrigem][topo_origem].visivel = false;
+            break;
+        }
+        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaCopas[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 3){
+            pilhaCopas[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
+            contaCopas = pilhaCopas[i].valor;
+            pilhas[pilhaOrigem][topo_origem].valor = 0;
+            pilhas[pilhaOrigem][topo_origem].visivel = false;
+            break;
+        }
+    }
+    printf("%d♠, %d♣, %d♥, %d♦\n", contaEspadas, contaPaus, contaOuros, contaCopas);
 }
 
 int main(){
@@ -267,26 +335,37 @@ int main(){
     getchar();
     limpa_tela();
 
+    inicializar_pilhas_globais();
+
     do{
         printf("Paciencia!\n\n");
         
         mostra_pilhas(pilhas, tamanho_pilha);
-        puxa_deposito(baralho);
+        conta_cartas_baralho(baralho);
         instrucao = pede_instrucoes();
     
-        if(instrucao == 8){
+        // virar uma carta do baralho
+        if(instrucao == 8){ 
             compra_carta(baralho, pilha_descarte);
-        }else
-        if(instrucao >= 1 && instrucao <= 7){
+        }
+        // selecionar carta do topo da pilha
+        else if(instrucao >= 1 && instrucao <= 7){
             int pilhaOrigem = instrucao - 1;
             int pilhaDestino;
     
-            printf("Escolha a pilha de destino(1-7): ");
+            printf("Escolha a pilha de destino (1-7) ou 8 para adicionar na pilha final do naipe: ");
             scanf("%d", &pilhaDestino);
             pilhaDestino--;
             limpa_tela();
-            move_cartas(pilhas, tamanho_pilha, pilhaOrigem, pilhaDestino);
+
+            if(pilhaDestino >= 0 && pilhaDestino <= 6) move_cartas(pilhas, tamanho_pilha, pilhaOrigem, pilhaDestino);
+            else if(pilhaDestino == 7) pilhas_finais(pilhas, pilhaOrigem);
+        } 
+        // selecionar a carta do topo do depósito
+        else if (instrucao == 9){
+            
         }
+        
     }while(instrucao != 0);
 
     return 0;

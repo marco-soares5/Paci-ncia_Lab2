@@ -218,7 +218,7 @@ void compra_carta(Carta *baralho, Carta descarte[52], int *primeira_carta){
     // q daí tu atualiza cada vez que tu roda essa função
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
-            (*primeira_carta)++; // um amigo me explicou, não entendi pq tem q estar entre parenteses kkkkk
+            (*primeira_carta)++; // um amigo me explicou, não entendi pq tem q estar entre parentesesy
             descarte[*primeira_carta] = baralho[i];
             descarte[*primeira_carta].visivel = true;
             remover_do_baralho(baralho, baralho[i]);
@@ -230,7 +230,7 @@ void compra_carta(Carta *baralho, Carta descarte[52], int *primeira_carta){
 int pede_instrucoes(){
     int instrucao;
     do{
-        printf("\n(1-7) - Selecionar pilha | 8 - Comprar do Deposito | 0 - Sair: ");
+        printf("\n(1-7) - Selecionar pilha | 8 - Comprar do Deposito | 9 - Selecionar a pilha do depósito | 0 - Sair: ");
         scanf("%d", &instrucao);
         printf("\n");
 
@@ -244,13 +244,20 @@ int pede_instrucoes(){
             printf("Carta comprada");
             muda_cor(0);
             printf("\n\n");
-        }else if(instrucao != 0){
+        }
+        else if(instrucao == 9){
+            muda_cor(33);
+            printf("Depósito selecionado");
+            muda_cor(0);
+            printf("\n\n");
+        }
+        else if(instrucao != 0){
             muda_cor(31);
             printf("Digite uma instrução valida");
             muda_cor(0);
             printf("\n\n");
         }
-    }while(!(instrucao >= 0 && instrucao <= 8));
+    }while(!(instrucao >= 0 && instrucao <= 9));
     return instrucao;
 }
 
@@ -331,6 +338,10 @@ void mostrar_deposito(Carta pilha_descarte[], int primeira_carta) {
     printf("\n");
 }
 
+void move_carta_deposito(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilha, Carta pilha_descarte[], int *primeira_carta, int pilhaDestino) {
+
+    
+}
 int main(){
     Carta baralho[52];
     Carta pilhas[7][13];
@@ -376,8 +387,20 @@ int main(){
 
             if(pilhaDestino >= 0 && pilhaDestino <= 6) move_cartas(pilhas, tamanho_pilha, pilhaOrigem, pilhaDestino);
             else if(pilhaDestino == 7) pilhas_finais(pilhas, pilhaOrigem);
-        } 
-        
+        } else if( instrucao == 9){
+            int pilhaDestino;
+            printf("Escolha a pilha de destino (1-7) ou 8 para adicionar na pilha final do naipe: ");
+            scanf("%d", &pilhaDestino);
+
+            if (pilhaDestino >= 1 && pilhaDestino <=7){
+                move_carta_deposito(pilhas, tamanho_pilha, pilha_descarte, &primeira_carta, pilhaDestino - 1);}
+                else {
+                    muda_cor(31);
+                    printf("Movimento invalido!");
+                    muda_cor(0);
+                    printf("\n\n");
+                }
+            }
     }while(instrucao != 0);
 
     return 0;

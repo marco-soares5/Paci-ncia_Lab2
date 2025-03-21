@@ -59,7 +59,8 @@ void preenche_baralho(Carta *baralho){
     for(int i = 0, contador = 0; i < 4; i++){
         for(int j = 1; j <= 13; j++, contador++){
             baralho[contador].naipe = i;
-            baralho[contador].valor = 1;
+            if(j % 2 == 0) baralho[contador].valor = 1;
+            else baralho[contador].valor = 2;
             baralho[contador].visivel = false;
         }
     }
@@ -279,48 +280,78 @@ void inicializar_pilhas_globais(){
     inicializar_globais(pilhaEspadas);
 }
 
-void printa_globais_teste(){
-    for(int i; i < 13; i++) printf("%d♠, %d♣, %d♥, %d♦\n", pilhaCopas[i], pilhaOuros[i], pilhaPaus[i], pilhaEspadas[i]);
-}
 
-
-void pilhas_finais(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int *tamanho_pilha){
+void pilhas_finais(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int *tamanho_pilha) {
     int topo_origem = carta_topo(pilhaOrigem, pilhas);
-    Carta carta_origem = pilhas[pilhaOrigem][topo_origem];
-    int contaEspadas = 0, contaPaus = 0, contaOuros = 0, contaCopas = 0;
+    if (topo_origem < 0) {
+        muda_cor(31);
+        printf("A pilha de origem está vazia.\n");
+        muda_cor(0);
+        return;
+    }
 
-    for(int i = 0; i < 13; i++){
-        if(pilhas[pilhaOrigem][topo_origem].naipe == 0){
-            if(pilhas[pilhaOrigem][topo_origem].valor == pilhaEspadas[i].valor + 1 ){
-                pilhaEspadas[i].valor = carta_origem.valor;
-                contaEspadas = pilhaEspadas[i].valor;
-                pilhas[pilhaOrigem][topo_origem].valor = 0;
-                pilhas[pilhaOrigem][topo_origem].visivel = false;
-                if(tamanho_pilha[pilhaOrigem] > 0) pilhas[pilhaOrigem][tamanho_pilha[pilhaOrigem] - 1].visivel = true;
+    Carta carta_origem = pilhas[pilhaOrigem][topo_origem];
+    Carta *pilha_final;
+
+    // Seleciona a pilha final correspondente ao naipe da carta
+    switch (carta_origem.naipe) {
+        case 0:
+            pilha_final = pilhaEspadas;
+            break;
+        case 1:
+            pilha_final = pilhaPaus;
+            break;
+        case 2:
+            pilha_final = pilhaOuros;
+            break;
+        case 3:
+            pilha_final = pilhaCopas;
+            break;
+        default:
+            muda_cor(31);
+            printf("Naipe inválido.\n");
+            muda_cor(0);
+            return;
+    }
+
+    // Verifica o valor esperado da próxima carta na pilha final
+    int proximo_valor = 1; // O primeiro valor aceito é 1
+    for (int i = 0; i < MAX_CARTAS; i++) {
+        if (pilha_final[i].valor != 0) {
+            proximo_valor = pilha_final[i].valor + 1;
+        } else {
+            break;
+        }
+    }
+
+    if (carta_origem.valor == proximo_valor) {
+        // Adiciona a carta na pilha final
+        for (int i = 0; i < MAX_CARTAS; i++) {
+            if (pilha_final[i].valor == 0) {
+                pilha_final[i] = carta_origem;
                 break;
             }
         }
-        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaPaus[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 1){
-            pilhaPaus[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
-            contaPaus = pilhaPaus[i].valor;
-            pilhas[pilhaOrigem][topo_origem].valor = 0;
-            pilhas[pilhaOrigem][topo_origem].visivel = false;
-            break;
+
+        // Remove a carta da pilha de origem
+        pilhas[pilhaOrigem][topo_origem].valor = 0;
+        pilhas[pilhaOrigem][topo_origem].naipe = 0;
+        pilhas[pilhaOrigem][topo_origem].visivel = false;
+        tamanho_pilha[pilhaOrigem]--;
+
+        // Torna a próxima carta visível, se houver
+        if (tamanho_pilha[pilhaOrigem] > 0) {
+            pilhas[pilhaOrigem][tamanho_pilha[pilhaOrigem] - 1].visivel = true;
         }
-        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaOuros[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 2){
-            pilhaOuros[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
-            contaOuros = pilhaOuros[i].valor;
-            pilhas[pilhaOrigem][topo_origem].valor = 0;
-            pilhas[pilhaOrigem][topo_origem].visivel = false;
-            break;
-        }
-        else if(pilhas[pilhaOrigem][topo_origem].valor == pilhaCopas[i].valor + 1 && pilhas[pilhaOrigem][topo_origem].naipe == 3){
-            pilhaCopas[i].valor = pilhas[pilhaOrigem][topo_origem].valor;
-            contaCopas = pilhaCopas[i].valor;
-            pilhas[pilhaOrigem][topo_origem].valor = 0;
-            pilhas[pilhaOrigem][topo_origem].visivel = false;
-            break;
-        }
+
+        muda_cor(32);
+        printf("Carta %d%s movida para a pilha final do naipe %s.\n", 
+               carta_origem.valor, lista_de_naipes[carta_origem.naipe], lista_de_naipes[carta_origem.naipe]);
+        muda_cor(0);
+    } else {
+        muda_cor(31);
+        printf("Movimento inválido! O valor da carta deve ser %d.\n", proximo_valor);
+        muda_cor(0);
     }
 }
 
@@ -409,7 +440,6 @@ int main(){
                     printf("\n\n");
                 }
             }
-        printa_globais_teste();
     }while(instrucao != 0);
 
     return 0;

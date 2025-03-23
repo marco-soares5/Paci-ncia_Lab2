@@ -255,7 +255,7 @@ int pede_instrucoes(){
             muda_cor(0);
             printf("\n\n");
         }
-    }while(!(instrucao >= 0 && instrucao <= 8));
+    }while(!(instrucao >= 0 && instrucao <= 9));
     return instrucao;
 }
 
@@ -374,10 +374,45 @@ void mostrar_deposito(Carta pilha_descarte[], int deposito_posição) {
     printf("\n");
 }
 
-void move_carta_deposito(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilha, Carta pilha_descarte[], int *primeira_carta, int pilhaDestino) {
+void move_carta_deposito(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilha, int deposito_posição, int pilhaDestino, Carta pilha_deposito[]) {
+    int topo_destino = carta_topo(pilhaDestino, pilhas);
 
+    if(deposito_posição <= 0){
+        printf("A pilha de origem esta vazia");
+        return;
+    }
     
-}
+    Carta carta_deposito = pilha_deposito[deposito_posição];
+    Carta carta_destino = pilhas[pilhaDestino][topo_destino];
+
+    if (topo_destino < 0){
+        if (carta_deposito.valor == 13){
+            muda_cor(31);
+            pilhas[pilhaDestino][0] = carta_deposito;
+            pilha_deposito[deposito_posição].valor = 0;
+            tamanho_pilha[pilhaDestino]++;
+
+            printf("Carta %d%s movida do depósito para a pilha %d", carta_deposito.valor, lista_de_naipes[carta_deposito.naipe], pilhaDestino);
+        } else {
+            printf("Só é aceito um rei aqui");
+        } 
+        return;
+    } 
+    if (movimento_valido(carta_deposito, carta_destino)){
+        pilhas[pilhaDestino][tamanho_pilha[pilhaDestino]] = carta_deposito; // acessa o tamanho de pilhadestino, pega o indice e joga a carta deposito
+        pilha_deposito[deposito_posição].valor= 0; // remove da pilha de origem
+        //pilhas[deposito_posição][topo_deposito].visivel = false;
+
+        tamanho_pilha[deposito_posição]--;
+        tamanho_pilha[pilhaDestino]++;
+        printf("Carta %d%s movida do depósito para a pilha %d", carta_deposito.valor, lista_de_naipes[carta_deposito.naipe], pilhaDestino + 1);
+        } else{
+        muda_cor(31);
+        printf("Movimento invalido!");
+        muda_cor(0);
+        printf("\n\n");
+        }
+}    
 
 int main(){
     Carta baralho[52];
@@ -385,7 +420,7 @@ int main(){
     Carta pilha_descarte[52]; // sobram 24 depois que as cartas são distribuidas pra as pilhas
     int tamanho_pilha[7];
     int instrucao;
-    int primeira_carta = -1;
+    int primeira_carta = 0;
     int deposito_posição = 0;
 
     preenche_baralho(baralho);
@@ -434,7 +469,7 @@ int main(){
             limpa_tela();
 
             if (pilhaDestino >= 0 && pilhaDestino <= 6){
-                move_carta_deposito(pilhas, tamanho_pilha, pilha_descarte, &primeira_carta, pilhaDestino - 1);}
+                move_carta_deposito(pilhas, tamanho_pilha, deposito_posição, pilhaDestino, pilha_descarte);}
                 else {
                     muda_cor(31);
                     printf("Movimento invalido!");

@@ -59,8 +59,7 @@ void preenche_baralho(Carta *baralho){
     for(int i = 0, contador = 0; i < 4; i++){
         for(int j = 1; j <= 13; j++, contador++){
             baralho[contador].naipe = i;
-            if(j % 2 == 0) baralho[contador].valor = 1;
-            else baralho[contador].valor = 2;
+            baralho[contador].valor = j;
             baralho[contador].visivel = false;
         }
     }

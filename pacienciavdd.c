@@ -356,14 +356,11 @@ void pilhas_finais(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int *t
 
 void mostrar_deposito(Carta pilha_descarte[], int deposito_posição) {
     printf("A carta no deposito é: ");
-    if (deposito_posição > 0) {
+    if (deposito_posição > 0 && pilha_descarte[deposito_posição].valor != 0) {
         Carta carta = pilha_descarte[deposito_posição];
 
-        if (carta.naipe == 2 || carta.naipe == 3) { 
-            muda_cor(31); 
-        } else { 
-            muda_cor(0); 
-        }
+        if (carta.naipe == 2 || carta.naipe == 3) muda_cor(31); 
+        else muda_cor(0); 
         
         printf("[%d%s]", carta.valor, lista_de_naipes[carta.naipe]);
         muda_cor(0); 
@@ -398,7 +395,7 @@ void move_carta_deposito(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilh
     } 
     if (movimento_valido(carta_deposito, carta_destino)){
         pilhas[pilhaDestino][tamanho_pilha[pilhaDestino]] = carta_deposito; // acessa o tamanho de pilhadestino, pega o indice e joga a carta deposito
-        pilha_deposito[deposito_posição].valor= 0; // remove da pilha de origem
+        pilha_deposito[deposito_posição].valor = 0; // remove da pilha de origem
 
         tamanho_pilha[deposito_posição]--;
         tamanho_pilha[pilhaDestino]++;

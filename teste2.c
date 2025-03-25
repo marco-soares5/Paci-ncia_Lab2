@@ -402,6 +402,19 @@ void move_carta_deposito(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilh
     } 
 }    
 
+bool verifica_pilha(Carta pilha[MAX_CARTAS]){
+    int i;
+    for(i = 0; i < 13; i++){
+        printf("Verificando a quantidade de cartas, carta %d", i );
+    } 
+    if (i == 13){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+
 int main(){
     Carta baralho[52];
     Carta pilhas[7][13];
@@ -467,7 +480,7 @@ int main(){
                     printf("\n\n");
                 }
             }
-    }while(instrucao != 0);
+    }while(instrucao != 0 || (verifica_pilha(pilhaCopas) == true && verifica_pilha(pilhaEspadas) == true && verifica_pilha(pilhaOuros) == true && verifica_pilha(pilhaPaus) == true)) ;
 
     return 0;
 }

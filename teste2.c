@@ -356,17 +356,14 @@ void pilhas_finais(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int pilhaOrigem, int *t
 }
 
 void mostrar_deposito(Carta pilha_descarte[], int deposito_posição) {
-    printf("A carta no deposito é: ");
-    if (deposito_posição > 0 && pilha_descarte[deposito_posição].valor != 0) {
-        Carta carta = pilha_descarte[deposito_posição];
-
-        if (carta.naipe == 2 || carta.naipe == 3) muda_cor(31); 
-        else muda_cor(0); 
-        
-        printf("[%d%s]", carta.valor, lista_de_naipes[carta.naipe]);
-        muda_cor(0); 
+    Carta carta = pilha_descarte[deposito_posição];
+    if ((deposito_posição > 0 && pilha_descarte[deposito_posição].valor != 0) && (carta.naipe == 2 || carta.naipe == 3) ){
+        muda_cor(31);
+        printf(" A carta no depósito é: [%d%s]", carta.valor, lista_de_naipes[carta.naipe]);
+        muda_cor(0);
     } else {
-        printf("[ ]");
+        muda_cor(0); 
+        printf(" A carta no depósito é: [%d%s]", carta.valor, lista_de_naipes[carta.naipe]);
     }
 }
 

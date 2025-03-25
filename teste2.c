@@ -211,15 +211,15 @@ void move_cartas(Carta pilhas[NUM_PILHAS][MAX_CARTAS], int *tamanho_pilha, int p
     }
 }
 
-void compra_carta(Carta *baralho, Carta descarte[52], int *primeira_carta){
+void compra_carta(Carta *baralho, Carta descarte[52], int *deposito_posição){
     // isso aqui tava reiniicando o descarte aqui eu acho, to passando como argumento uma variável declarada na main, pq daí eu passo pra função de mostrar o depósito também
     // agora essa função percorre todo o baralho até encontrar um valor diferente de 0, ai tu manda isso pra primeira carta q vai ser o índice da primeira carta que está no descar
     // q daí tu atualiza cada vez que tu roda essa função
     for(int i = 0; i < 52; i++){
         if(baralho[i].valor != 0){
-            (*primeira_carta)++; // um amigo me explicou, não entendi pq tem q estar entre parentesesy
-            descarte[*primeira_carta] = baralho[i];
-            descarte[*primeira_carta].visivel = true;
+            (*deposito_posição)++; // 
+            descarte[*deposito_posição] = baralho[i];
+            descarte[*deposito_posição].visivel = true;
             remover_do_baralho(baralho, baralho[i]);
             break;
         }
@@ -433,9 +433,9 @@ int main(){
     
         // virar uma carta do baralho
         if(instrucao == 8){ 
-            compra_carta(baralho, pilha_descarte, &primeira_carta);
+            compra_carta(baralho, pilha_descarte, &deposito_posição);
             limpa_tela();
-            deposito_posição++;
+            
         }
         // selecionar carta do topo da pilha
         else if(instrucao >= 1 && instrucao <= 7){
@@ -457,7 +457,9 @@ int main(){
             limpa_tela();
 
             if (pilhaDestino >= 0 && pilhaDestino <= 6){
-                move_carta_deposito(pilhas, tamanho_pilha, deposito_posição, pilhaDestino, pilha_descarte);}
+                move_carta_deposito(pilhas, tamanho_pilha, deposito_posição, pilhaDestino, pilha_descarte);
+                compra_carta(baralho, pilha_descarte, &deposito_posição);} // isso aqui fica aqui se tu quiser que
+                // quando tenha a jogada ele compre uma carta automaticamente, se não vai ficar vazio o deposito
                 else {
                     muda_cor(31);
                     printf("Movimento invalido!");
